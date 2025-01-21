@@ -1034,21 +1034,26 @@
                     <trigger_prototypes>
                         <trigger_prototype>
                             <uuid>9a26d51188ad4ed08e7199d1c5a6b783</uuid>
-                            <expression>(avg(/SUN Oracle ZS7 Storage Array/sunAkPoolAvailableB[{#SUNAKPOOLNAME}],1d)*100/avg(/SUN Oracle ZS7 Storage Array/sunAkPoolTotalB[{#SUNAKPOOLNAME}],1d))&lt;{$POOL.DISK.AVAI.CRIT}</expression>
+                            <expression>(avg(/SUN Oracle ZS7 Storage Array/sunAkPoolAvailableB[{#SUNAKPOOLNAME}],30m)*100/avg(/SUN Oracle ZS7 Storage Array/sunAkPoolTotalB[{#SUNAKPOOLNAME}],30m))&lt;{$POOL.DISK.AVAI.CRIT}</expression>
+                            <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                            <recovery_expression>(avg(/SUN Oracle ZS7 Storage Array/sunAkPoolAvailableB[{#SUNAKPOOLNAME}],30m)*100/avg(/SUN Oracle ZS7 Storage Array/sunAkPoolTotalB[{#SUNAKPOOLNAME}],30m))&gt;{$POOL.DISK.AVAI.CRIT}</recovery_expression>
                             <name>Space available on {#SUNAKPOOLNAME} is bellow {$POOL.DISK.AVAI.CRIT}%</name>
                             <opdata>Pool Size: $2 , Pool Space Available: $1</opdata>
                             <priority>HIGH</priority>
                         </trigger_prototype>
                         <trigger_prototype>
                             <uuid>4ee339205b594813ae8ca779a6d23ae5</uuid>
-                            <expression>(avg(/SUN Oracle ZS7 Storage Array/sunAkPoolAvailableB[{#SUNAKPOOLNAME}],1d)*100/avg(/SUN Oracle ZS7 Storage Array/sunAkPoolTotalB[{#SUNAKPOOLNAME}],1d))&lt;{$POOL.DISK.AVAI.WARN}</expression>
+                            <expression>(avg(/SUN Oracle ZS7 Storage Array/sunAkPoolAvailableB[{#SUNAKPOOLNAME}],30m)*100/avg(/SUN Oracle ZS7 Storage Array/sunAkPoolTotalB[{#SUNAKPOOLNAME}],30m))&lt;{$POOL.DISK.AVAI.WARN}</expression>
+                            <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                            <recovery_expression>(avg(/SUN Oracle ZS7 Storage Array/sunAkPoolAvailableB[{#SUNAKPOOLNAME}],30m)*100/avg(/SUN Oracle ZS7 Storage Array/sunAkPoolTotalB[{#SUNAKPOOLNAME}],30m))&gt;{$POOL.DISK.AVAI.WARN}</recovery_expression>
                             <name>Space available on {#SUNAKPOOLNAME} is bellow {$POOL.DISK.AVAI.WARN}%</name>
                             <opdata>Pool Size: $2 , Pool Space Available: $1</opdata>
                             <priority>WARNING</priority>
                             <dependencies>
                                 <dependency>
                                     <name>Space available on {#SUNAKPOOLNAME} is bellow {$POOL.DISK.AVAI.CRIT}%</name>
-                                    <expression>(avg(/SUN Oracle ZS7 Storage Array/sunAkPoolAvailableB[{#SUNAKPOOLNAME}],1d)*100/avg(/SUN Oracle ZS7 Storage Array/sunAkPoolTotalB[{#SUNAKPOOLNAME}],1d))&lt;{$POOL.DISK.AVAI.CRIT}</expression>
+                                    <expression>(avg(/SUN Oracle ZS7 Storage Array/sunAkPoolAvailableB[{#SUNAKPOOLNAME}],30m)*100/avg(/SUN Oracle ZS7 Storage Array/sunAkPoolTotalB[{#SUNAKPOOLNAME}],30m))&lt;{$POOL.DISK.AVAI.CRIT}</expression>
+                                    <recovery_expression>(avg(/SUN Oracle ZS7 Storage Array/sunAkPoolAvailableB[{#SUNAKPOOLNAME}],30m)*100/avg(/SUN Oracle ZS7 Storage Array/sunAkPoolTotalB[{#SUNAKPOOLNAME}],30m))&gt;{$POOL.DISK.AVAI.CRIT}</recovery_expression>
                                 </dependency>
                             </dependencies>
                         </trigger_prototype>
@@ -1057,31 +1062,24 @@
                         <graph_prototype>
                             <uuid>93ac300a731541d28448afaca6fade25</uuid>
                             <name>Pool Space for {#SUNAKPOOLNAME}</name>
+                            <yaxismax>0</yaxismax>
                             <show_work_period>NO</show_work_period>
+                            <show_triggers>NO</show_triggers>
+                            <type>EXPLODED</type>
+                            <show_3d>YES</show_3d>
                             <graph_items>
                                 <graph_item>
-                                    <drawtype>BOLD_LINE</drawtype>
-                                    <color>274482</color>
-                                    <calc_fnc>ALL</calc_fnc>
-                                    <item>
-                                        <host>SUN Oracle ZS7 Storage Array</host>
-                                        <key>sunAkPoolTotalB[{#SUNAKPOOLNAME}]</key>
-                                    </item>
-                                </graph_item>
-                                <graph_item>
-                                    <sortorder>1</sortorder>
                                     <color>1A7C11</color>
-                                    <calc_fnc>ALL</calc_fnc>
+                                    <calc_fnc>LAST</calc_fnc>
                                     <item>
                                         <host>SUN Oracle ZS7 Storage Array</host>
                                         <key>sunAkPoolAvailableB[{#SUNAKPOOLNAME}]</key>
                                     </item>
                                 </graph_item>
                                 <graph_item>
-                                    <sortorder>2</sortorder>
-                                    <drawtype>GRADIENT_LINE</drawtype>
+                                    <sortorder>1</sortorder>
                                     <color>F63100</color>
-                                    <calc_fnc>ALL</calc_fnc>
+                                    <calc_fnc>LAST</calc_fnc>
                                     <item>
                                         <host>SUN Oracle ZS7 Storage Array</host>
                                         <key>sunAkPoolUsedB[{#SUNAKPOOLNAME}]</key>
@@ -1346,56 +1344,30 @@
                 </discovery_rule>
                 <discovery_rule>
                     <uuid>214fab03986e47a8ba5b29de1e621fa8</uuid>
-                    <name>sunAkShareEntry Discovery</name>
+                    <name>sunAkShare Discovery</name>
                     <type>SNMP_AGENT</type>
-                    <snmp_oid>discovery[{#SUNAKSHARETYPE},.1.3.6.1.4.1.42.2.225.1.6.1.13,{#SUNAKSHAREAVAILABLEB},.1.3.6.1.4.1.42.2.225.1.6.1.12,{#SUNAKSHAREUSEDB},.1.3.6.1.4.1.42.2.225.1.6.1.11,{#SUNAKSHARESIZEB},.1.3.6.1.4.1.42.2.225.1.6.1.10]</snmp_oid>
+                    <snmp_oid>discovery[{#SUNAKSHARENAME},.1.3.6.1.4.1.42.2.225.1.6.1.2]</snmp_oid>
                     <key>SUN-AK-MIB.sunAkShareEntry</key>
                     <delay>3600</delay>
-                    <status>DISABLED</status>
                     <lifetime>30d</lifetime>
                     <enabled_lifetime_type>DISABLE_NEVER</enabled_lifetime_type>
                     <description>A local share.</description>
                     <item_prototypes>
                         <item_prototype>
                             <uuid>3b8169e78c744c10bbe81368108c58bf</uuid>
-                            <name>sunAkShareAvailableB for {#SNMPINDEX}</name>
+                            <name>Share space available for {#SUNAKSHARENAME}</name>
                             <type>SNMP_AGENT</type>
                             <snmp_oid>.1.3.6.1.4.1.42.2.225.1.6.1.12.{#SNMPINDEX}</snmp_oid>
-                            <key>sunAkShareAvailableB[{#SNMPINDEX}]</key>
-                            <delay>60</delay>
+                            <key>sunAkShareAvailableB[{#SUNAKSHARENAME}]</key>
+                            <delay>15m</delay>
                             <history>7d</history>
-                            <units>/sec</units>
+                            <units>B</units>
                             <description>The current available space for this share, in bytes. This often reflects the available space for the pool to which this share belongs.</description>
                             <preprocessing>
                                 <step>
-                                    <type>CHANGE_PER_SECOND</type>
+                                    <type>DISCARD_UNCHANGED_HEARTBEAT</type>
                                     <parameters>
-                                        <parameter/>
-                                    </parameters>
-                                </step>
-                            </preprocessing>
-                            <tags>
-                                <tag>
-                                    <tag>Application</tag>
-                                    <value>SUN-AK-MIB::sunAkMIB</value>
-                                </tag>
-                            </tags>
-                        </item_prototype>
-                        <item_prototype>
-                            <uuid>4e7adaf1979143a8831a2c790b800d56</uuid>
-                            <name>sunAkShareAvailableGB for {#SNMPINDEX}</name>
-                            <type>SNMP_AGENT</type>
-                            <snmp_oid>.1.3.6.1.4.1.42.2.225.1.6.1.9.{#SNMPINDEX}</snmp_oid>
-                            <key>sunAkShareAvailableGB[{#SNMPINDEX}]</key>
-                            <delay>60</delay>
-                            <history>7d</history>
-                            <units>/sec</units>
-                            <description>The current available space for this share, in gigabytes. This often reflects the available space for the pool to which this share belongs.</description>
-                            <preprocessing>
-                                <step>
-                                    <type>CHANGE_PER_SECOND</type>
-                                    <parameters>
-                                        <parameter/>
+                                        <parameter>1h</parameter>
                                     </parameters>
                                 </step>
                             </preprocessing>
@@ -1408,109 +1380,20 @@
                         </item_prototype>
                         <item_prototype>
                             <uuid>8092a68207c1471db69a550d2c74e077</uuid>
-                            <name>sunAkShareMountpoint for {#SNMPINDEX}</name>
+                            <name>Share Mountpoint for {#SUNAKSHARENAME}</name>
                             <type>SNMP_AGENT</type>
                             <snmp_oid>.1.3.6.1.4.1.42.2.225.1.6.1.6.{#SNMPINDEX}</snmp_oid>
-                            <key>sunAkShareMountpoint[{#SNMPINDEX}]</key>
-                            <delay>60</delay>
+                            <key>sunAkShareMountpoint[{#SUNAKSHARENAME}]</key>
+                            <delay>1h</delay>
                             <history>7d</history>
                             <value_type>TEXT</value_type>
                             <trends>0</trends>
                             <description>The pathname for where this share is mounted.</description>
-                            <tags>
-                                <tag>
-                                    <tag>Application</tag>
-                                    <value>SUN-AK-MIB::sunAkMIB</value>
-                                </tag>
-                            </tags>
-                        </item_prototype>
-                        <item_prototype>
-                            <uuid>dba0c9ee91ec402ca49e1252e1e0604e</uuid>
-                            <name>sunAkShareName for {#SNMPINDEX}</name>
-                            <type>SNMP_AGENT</type>
-                            <snmp_oid>.1.3.6.1.4.1.42.2.225.1.6.1.2.{#SNMPINDEX}</snmp_oid>
-                            <key>sunAkShareName[{#SNMPINDEX}]</key>
-                            <delay>60</delay>
-                            <history>7d</history>
-                            <value_type>TEXT</value_type>
-                            <trends>0</trends>
-                            <description>The full name of this share. This includes the pool, project and share components. This name is unique for this appliance.</description>
-                            <tags>
-                                <tag>
-                                    <tag>Application</tag>
-                                    <value>SUN-AK-MIB::sunAkMIB</value>
-                                </tag>
-                            </tags>
-                        </item_prototype>
-                        <item_prototype>
-                            <uuid>67faf14086914bb9bf6c384da89a84df</uuid>
-                            <name>sunAkSharePool for {#SNMPINDEX}</name>
-                            <type>SNMP_AGENT</type>
-                            <snmp_oid>.1.3.6.1.4.1.42.2.225.1.6.1.3.{#SNMPINDEX}</snmp_oid>
-                            <key>sunAkSharePool[{#SNMPINDEX}]</key>
-                            <delay>60</delay>
-                            <history>7d</history>
-                            <value_type>TEXT</value_type>
-                            <trends>0</trends>
-                            <description>The name of the pool that this share belongs to.</description>
-                            <tags>
-                                <tag>
-                                    <tag>Application</tag>
-                                    <value>SUN-AK-MIB::sunAkMIB</value>
-                                </tag>
-                            </tags>
-                        </item_prototype>
-                        <item_prototype>
-                            <uuid>a4ec90b0d8e844de889cf1466c14053c</uuid>
-                            <name>sunAkShareProject for {#SNMPINDEX}</name>
-                            <type>SNMP_AGENT</type>
-                            <snmp_oid>.1.3.6.1.4.1.42.2.225.1.6.1.4.{#SNMPINDEX}</snmp_oid>
-                            <key>sunAkShareProject[{#SNMPINDEX}]</key>
-                            <delay>60</delay>
-                            <history>7d</history>
-                            <value_type>TEXT</value_type>
-                            <trends>0</trends>
-                            <description>The name of the project that this share belongs to.</description>
-                            <tags>
-                                <tag>
-                                    <tag>Application</tag>
-                                    <value>SUN-AK-MIB::sunAkMIB</value>
-                                </tag>
-                            </tags>
-                        </item_prototype>
-                        <item_prototype>
-                            <uuid>4c5b0cfbbfdf4ea9a0e1321378946acc</uuid>
-                            <name>sunAkShareShare for {#SNMPINDEX}</name>
-                            <type>SNMP_AGENT</type>
-                            <snmp_oid>.1.3.6.1.4.1.42.2.225.1.6.1.5.{#SNMPINDEX}</snmp_oid>
-                            <key>sunAkShareShare[{#SNMPINDEX}]</key>
-                            <delay>60</delay>
-                            <history>7d</history>
-                            <value_type>TEXT</value_type>
-                            <trends>0</trends>
-                            <description>The name of this share.</description>
-                            <tags>
-                                <tag>
-                                    <tag>Application</tag>
-                                    <value>SUN-AK-MIB::sunAkMIB</value>
-                                </tag>
-                            </tags>
-                        </item_prototype>
-                        <item_prototype>
-                            <uuid>339672582a9940078e91cca52c441b75</uuid>
-                            <name>sunAkShareSizeB for {#SNMPINDEX}</name>
-                            <type>SNMP_AGENT</type>
-                            <snmp_oid>.1.3.6.1.4.1.42.2.225.1.6.1.10.{#SNMPINDEX}</snmp_oid>
-                            <key>sunAkShareSizeB[{#SNMPINDEX}]</key>
-                            <delay>60</delay>
-                            <history>7d</history>
-                            <units>/sec</units>
-                            <description>The total capacity for this share, in bytes. This usually reflects the total capacity for the pool to which this share belongs.</description>
                             <preprocessing>
                                 <step>
-                                    <type>CHANGE_PER_SECOND</type>
+                                    <type>DISCARD_UNCHANGED_HEARTBEAT</type>
                                     <parameters>
-                                        <parameter/>
+                                        <parameter>12h</parameter>
                                     </parameters>
                                 </step>
                             </preprocessing>
@@ -1522,20 +1405,72 @@
                             </tags>
                         </item_prototype>
                         <item_prototype>
-                            <uuid>40d752a9db134c76a6573e803e4e9735</uuid>
-                            <name>sunAkShareSizeGB for {#SNMPINDEX}</name>
+                            <uuid>67faf14086914bb9bf6c384da89a84df</uuid>
+                            <name>Share pool for {#SUNAKSHARENAME}</name>
                             <type>SNMP_AGENT</type>
-                            <snmp_oid>.1.3.6.1.4.1.42.2.225.1.6.1.7.{#SNMPINDEX}</snmp_oid>
-                            <key>sunAkShareSizeGB[{#SNMPINDEX}]</key>
-                            <delay>60</delay>
+                            <snmp_oid>.1.3.6.1.4.1.42.2.225.1.6.1.3.{#SNMPINDEX}</snmp_oid>
+                            <key>sunAkSharePool[{#SUNAKSHARENAME}]</key>
+                            <delay>1h</delay>
                             <history>7d</history>
-                            <units>/sec</units>
-                            <description>The total capacity for this share, in gigabytes. This usually reflects the total capacity for the pool to which this share belongs.</description>
+                            <value_type>TEXT</value_type>
+                            <trends>0</trends>
+                            <description>The name of the pool that this share belongs to.</description>
                             <preprocessing>
                                 <step>
-                                    <type>CHANGE_PER_SECOND</type>
+                                    <type>DISCARD_UNCHANGED_HEARTBEAT</type>
                                     <parameters>
-                                        <parameter/>
+                                        <parameter>12h</parameter>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>SUN-AK-MIB::sunAkMIB</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>a4ec90b0d8e844de889cf1466c14053c</uuid>
+                            <name>Share project for {#SUNAKSHARENAME}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.4.1.42.2.225.1.6.1.4.{#SNMPINDEX}</snmp_oid>
+                            <key>sunAkShareProject[{#SUNAKSHARENAME}]</key>
+                            <delay>1h</delay>
+                            <history>7d</history>
+                            <value_type>TEXT</value_type>
+                            <trends>0</trends>
+                            <description>The name of the project that this share belongs to.</description>
+                            <preprocessing>
+                                <step>
+                                    <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                                    <parameters>
+                                        <parameter>12h</parameter>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>SUN-AK-MIB::sunAkMIB</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>339672582a9940078e91cca52c441b75</uuid>
+                            <name>Share total space for {#SUNAKSHARENAME}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.4.1.42.2.225.1.6.1.10.{#SNMPINDEX}</snmp_oid>
+                            <key>sunAkShareSizeB[{#SUNAKSHARENAME}]</key>
+                            <delay>15m</delay>
+                            <history>7d</history>
+                            <units>B</units>
+                            <description>The total capacity for this share, in bytes. This usually reflects the total capacity for the pool to which this share belongs.</description>
+                            <preprocessing>
+                                <step>
+                                    <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                                    <parameters>
+                                        <parameter>1h</parameter>
                                     </parameters>
                                 </step>
                             </preprocessing>
@@ -1548,39 +1483,22 @@
                         </item_prototype>
                         <item_prototype>
                             <uuid>db9e5dcaa6bf4a579a03b3bc40e684c7</uuid>
-                            <name>sunAkShareType for {#SNMPINDEX}</name>
+                            <name>Share type for {#SUNAKSHARENAME}</name>
                             <type>SNMP_AGENT</type>
                             <snmp_oid>.1.3.6.1.4.1.42.2.225.1.6.1.13.{#SNMPINDEX}</snmp_oid>
-                            <key>sunAkShareType[{#SNMPINDEX}]</key>
-                            <delay>60</delay>
+                            <key>sunAkShareType[{#SUNAKSHARENAME}]</key>
+                            <delay>1h</delay>
                             <history>7d</history>
                             <value_type>FLOAT</value_type>
                             <description>The share type.</description>
                             <valuemap>
                                 <name>SUN-AK-MIB::sunAkShareType</name>
                             </valuemap>
-                            <tags>
-                                <tag>
-                                    <tag>Application</tag>
-                                    <value>SUN-AK-MIB::sunAkMIB</value>
-                                </tag>
-                            </tags>
-                        </item_prototype>
-                        <item_prototype>
-                            <uuid>138787f88c304d72b94b6248ddd8e210</uuid>
-                            <name>sunAkShareUsedB for {#SNMPINDEX}</name>
-                            <type>SNMP_AGENT</type>
-                            <snmp_oid>.1.3.6.1.4.1.42.2.225.1.6.1.11.{#SNMPINDEX}</snmp_oid>
-                            <key>sunAkShareUsedB[{#SNMPINDEX}]</key>
-                            <delay>60</delay>
-                            <history>7d</history>
-                            <units>/sec</units>
-                            <description>The current space used by this share, in bytes.</description>
                             <preprocessing>
                                 <step>
-                                    <type>CHANGE_PER_SECOND</type>
+                                    <type>DISCARD_UNCHANGED_HEARTBEAT</type>
                                     <parameters>
-                                        <parameter/>
+                                        <parameter>12h</parameter>
                                     </parameters>
                                 </step>
                             </preprocessing>
@@ -1592,20 +1510,20 @@
                             </tags>
                         </item_prototype>
                         <item_prototype>
-                            <uuid>552e43b44a0d4aa6b477e7e5a107443e</uuid>
-                            <name>sunAkShareUsedGB for {#SNMPINDEX}</name>
+                            <uuid>138787f88c304d72b94b6248ddd8e210</uuid>
+                            <name>Share space used for {#SUNAKSHARENAME}</name>
                             <type>SNMP_AGENT</type>
-                            <snmp_oid>.1.3.6.1.4.1.42.2.225.1.6.1.8.{#SNMPINDEX}</snmp_oid>
-                            <key>sunAkShareUsedGB[{#SNMPINDEX}]</key>
-                            <delay>60</delay>
+                            <snmp_oid>.1.3.6.1.4.1.42.2.225.1.6.1.11.{#SNMPINDEX}</snmp_oid>
+                            <key>sunAkShareUsedB[{#SUNAKSHARENAME}]</key>
+                            <delay>15m</delay>
                             <history>7d</history>
-                            <units>/sec</units>
-                            <description>The current space used by this share, in gigabytes.</description>
+                            <units>B</units>
+                            <description>The current space used by this share, in bytes.</description>
                             <preprocessing>
                                 <step>
-                                    <type>CHANGE_PER_SECOND</type>
+                                    <type>DISCARD_UNCHANGED_HEARTBEAT</type>
                                     <parameters>
-                                        <parameter/>
+                                        <parameter>1h</parameter>
                                     </parameters>
                                 </step>
                             </preprocessing>
@@ -1617,6 +1535,37 @@
                             </tags>
                         </item_prototype>
                     </item_prototypes>
+                    <graph_prototypes>
+                        <graph_prototype>
+                            <uuid>2d68980bf5404142af713bdfdd8b31c2</uuid>
+                            <name>Share Space for {#SUNAKSHARENAME}</name>
+                            <height>300</height>
+                            <yaxismax>0</yaxismax>
+                            <show_work_period>NO</show_work_period>
+                            <show_triggers>NO</show_triggers>
+                            <type>EXPLODED</type>
+                            <show_3d>YES</show_3d>
+                            <graph_items>
+                                <graph_item>
+                                    <color>1A7C11</color>
+                                    <calc_fnc>LAST</calc_fnc>
+                                    <item>
+                                        <host>SUN Oracle ZS7 Storage Array</host>
+                                        <key>sunAkShareAvailableB[{#SUNAKSHARENAME}]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>1</sortorder>
+                                    <color>274482</color>
+                                    <calc_fnc>LAST</calc_fnc>
+                                    <item>
+                                        <host>SUN Oracle ZS7 Storage Array</host>
+                                        <key>sunAkShareUsedB[{#SUNAKSHARENAME}]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                    </graph_prototypes>
                 </discovery_rule>
                 <discovery_rule>
                     <uuid>1e87c7e843ba431fb5ebfbb07e86e363</uuid>
@@ -2273,6 +2222,79 @@
                     <value>161</value>
                 </macro>
             </macros>
+            <dashboards>
+                <dashboard>
+                    <uuid>e958d085ebaa4c818c9d7e59410c1da5</uuid>
+                    <name>Overall space consumption</name>
+                    <display_period>120</display_period>
+                    <pages>
+                        <page>
+                            <name>Pool's</name>
+                            <widgets>
+                                <widget>
+                                    <type>graphprototype</type>
+                                    <name>Pool</name>
+                                    <width>71</width>
+                                    <height>14</height>
+                                    <hide_header>YES</hide_header>
+                                    <fields>
+                                        <field>
+                                            <type>GRAPH_PROTOTYPE</type>
+                                            <name>graphid.0</name>
+                                            <value>
+                                                <host>SUN Oracle ZS7 Storage Array</host>
+                                                <name>Pool Space for {#SUNAKPOOLNAME}</name>
+                                            </value>
+                                        </field>
+                                        <field>
+                                            <type>STRING</type>
+                                            <name>reference</name>
+                                            <value>MHMBW</value>
+                                        </field>
+                                        <field>
+                                            <type>INTEGER</type>
+                                            <name>rows</name>
+                                            <value>2</value>
+                                        </field>
+                                    </fields>
+                                </widget>
+                            </widgets>
+                        </page>
+                        <page>
+                            <name>Share's</name>
+                            <widgets>
+                                <widget>
+                                    <type>graphprototype</type>
+                                    <name>Share's</name>
+                                    <width>71</width>
+                                    <height>14</height>
+                                    <hide_header>YES</hide_header>
+                                    <fields>
+                                        <field>
+                                            <type>GRAPH_PROTOTYPE</type>
+                                            <name>graphid.0</name>
+                                            <value>
+                                                <host>SUN Oracle ZS7 Storage Array</host>
+                                                <name>Share Space for {#SUNAKSHARENAME}</name>
+                                            </value>
+                                        </field>
+                                        <field>
+                                            <type>STRING</type>
+                                            <name>reference</name>
+                                            <value>RGQTW</value>
+                                        </field>
+                                        <field>
+                                            <type>INTEGER</type>
+                                            <name>rows</name>
+                                            <value>2</value>
+                                        </field>
+                                    </fields>
+                                </widget>
+                            </widgets>
+                        </page>
+                    </pages>
+                </dashboard>
+            </dashboards>
             <valuemaps>
                 <valuemap>
                     <uuid>ae283a2ee86c4066a405b2f919956ed8</uuid>
